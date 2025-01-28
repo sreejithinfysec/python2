@@ -7,15 +7,21 @@ def bypass(self):
         # Check if data is not empty, post forms has all params defined
         # which may be empty and cause unexpected behaviour.
         if request.form.get('input_data') != '':
+            data = random.SystemRandom().randint(1, 1000)
             try:
-                # Use json.loads to safely evaluate the input data
-                data = json.loads(request.form['input_data'])
-                return "Data evaluated successfully"
-            except (ValueError, SyntaxError) as e:
-                return "Invalid input: {}".format(str(e))
+                # Instanciate a different stdout grabber for subprocess
+                output = OutputGrabber()
+                with output:
+                    # Execute code from it
+                    eval(request.form['input_data'])
+                return output.capturedtext
+            except Exception as e:
+                return "Server Error: {}:".format(str(e))
+
         else:
             return redirect(request.url)
     return render_template('eval.html')
+
 
 
 
