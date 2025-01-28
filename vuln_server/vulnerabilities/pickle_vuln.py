@@ -1,12 +1,10 @@
 import base64
 import pickle
 from flask import flash, request, redirect, render_template
-from werkzeug.utils import secure_filename
-import os
 
 class PickleVuln():
 
-    def injection():
+def injection():
         """Pickle object command injection/execution.
 
         This function will evaluate if the user includes a file or
@@ -32,6 +30,8 @@ class PickleVuln():
                 flash('No selected file')
                 return redirect(request.url)
         return render_template('pickle.html')
+
+
 
 
 
