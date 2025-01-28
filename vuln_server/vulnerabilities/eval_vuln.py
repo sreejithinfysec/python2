@@ -4,23 +4,24 @@ import random
 
 def bypass(self):
     if request.method == 'POST':
-        if request.form['input_data'] != '':
+        # Check if data is not empty, post forms has all params defined
+        # which may be empty and cause unexpected behaviour.
+        if request.form.get('input_data') != '':
+            data = sanitize_log_entry(request.form.get('input_data'))  # Only allow numeric input
             try:
+                # Instanciate a different stdout grabber for subprocess
                 output = OutputGrabber()
                 with output:
-                    if random.randint(1, 1000) != json.loads(request.form['input_data']):
+                    # Eval input data and execute code from it
+                    if data == request.form.get('input_data'):
                         pass
                 return output.capturedtext
             except Exception as e:
                 return "Server Error: {}:".format(str(e))
         else:
-            parsed_url = urlparse(request.url)
-            query_params = parse_qs(parsed_url.query)
-            next_url = query_params.get('next', [''])[0]
-            # Escape the URL before passing it to urlparse
-            escaped_next_url = urlencode({'next': next_url}, quote_via=quote_plus)
-            return redirect(escaped_next_url)
+            return redirect(request.url)
     return render_template('eval.html')
+
 
 
 
