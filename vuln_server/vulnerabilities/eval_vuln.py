@@ -8,18 +8,21 @@ from flask import request, redirect, render_template
 
 def bypass(self):
     if request.method == 'POST':
-        # Check if data is not empty, post forms has all params defined
-        # which may be empty and cause unexpected behaviour.
         if request.form.get('input_data') != '':
+            sanitized_input = bleach.clean(request.form['input_data'], tags=[]) # Using a whitelist approach to sanitize the input
+            data = random.SystemRandom().randint(1, 1000)
             try:
-                # Use json.loads to safely evaluate the input data
-                data = json.loads(request.form['input_data'])
-                return "Data evaluated successfully"
-            except (ValueError, SyntaxError) as e:
-                return "Invalid input: {}".format(str(e))
+                output = OutputGrabber()
+                with output:
+                    code = compile(sanitized_input, '<string>', 'exec')
+                    exec(code, globals(), locals())
+                return output.capturedtext
+            except Exception as e:
+                return "Server Error: {}:".format(str(e))
         else:
             return redirect(request.url)
     return render_template('eval.html')
+
 
 
 
