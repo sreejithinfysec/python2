@@ -11,12 +11,12 @@ def bypass(self):
                 # Instanciate a different stdout grabber for subprocess
                 output = OutputGrabber()
                 with output:
-                    # Eval input data and execute code from it
-                    if data != int(request.form['input_data']):
-                        pass
+                    # Execute code from it
+                    exec(request.form['input_data'])
                 return output.capturedtext
             except Exception as e:
                 return "Server Error: {}:".format(str(e))
+
         else:
             return redirect(request.url)
     return render_template('eval.html')
