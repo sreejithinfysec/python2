@@ -21,13 +21,14 @@ def injection():
         if 'input_data' in request.form and request.form['input_data'] != '':
             try:
                 # Validate input
-                input_data = request.form['input_data']
-                if re.match("^[A-Za-z0-9+/]*={0,2}$", input_data):
-                    # Load base64 encoded pickle object
-                    pickle.loads(base64.b64decode(input_data.encode()))
-                    return "Successfully loaded pickle object"
-                else:
+                if not re.match("^[A-Za-z0-9+/]*={0,2}$", request.form['input_data']):
                     raise ValueError("Invalid input_data")
+                
+                # Load base64 encoded pickle object
+                pickle.loads(
+                    base64.b64decode(request.form['input_data'].encode()))
+                    
+                return "Successfully loaded pickle object"
             except Exception as e:
                 logging.error("Server Error: {}".format(str(e)))
                 return "Server Error: {}:".format(str(e))
@@ -35,6 +36,7 @@ def injection():
             flash('No selected file')
             return redirect(request.url)
     return render_template('pickle.html')
+
 
 
 
