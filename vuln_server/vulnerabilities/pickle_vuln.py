@@ -25,8 +25,7 @@ def injection():
                     raise ValueError("Invalid input_data")
                 
                 # Load base64 encoded pickle object
-                pickle.loads(
-                    base64.b64decode(request.form['input_data'].encode()))
+                json.loads(base64.b64decode(request.form['input_data'].encode()))
                     
                 return "Successfully loaded pickle object"
             except Exception as e:
@@ -36,6 +35,7 @@ def injection():
             flash('No selected file')
             return redirect(request.url)
     return render_template('pickle.html')
+
 
 
 
