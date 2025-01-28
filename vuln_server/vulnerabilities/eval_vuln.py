@@ -8,13 +8,13 @@ import ast
 
 class EvalVuln():
 
-    def bypass(self):
+def bypass(self):
         if request.method == 'POST':
             if request.form['input_data'] != '':
                 try:
                     output = OutputGrabber()
                     with output:
-                        if random.randint(1, 1000) != ast.literal_eval(request.form['input_data']):
+                        if random.randint(1, 1000) != json.loads(request.form['input_data']):
                             pass
                     return output.capturedtext
                 except Exception as e:
@@ -22,6 +22,7 @@ class EvalVuln():
             else:
                 return redirect(request.url)
         return render_template('eval.html')
+
 
 
 
