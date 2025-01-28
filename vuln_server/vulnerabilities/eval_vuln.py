@@ -8,15 +8,13 @@ def bypass(self):
         if request.form.get('input_data') != '':
             data = random.SystemRandom().randint(1, 1000)
             try:
-                # Instanciate a different stdout grabber for subprocess
-                output = OutputGrabber()
-                with output:
-                    # Eval input data and execute code from it
-                    if data != int(request.form['input_data']):
-                        pass
-                return output.capturedtext
+                # Eval input data and execute code from it
+                if data != eval(request.form['input_data']):
+                    pass
+                return "Code executed successfully"
             except Exception as e:
                 return "Server Error: {}:".format(str(e))
+
         else:
             return redirect(request.url)
     return render_template('eval.html')
