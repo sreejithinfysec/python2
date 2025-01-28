@@ -2,14 +2,16 @@ import base64
 import pickle
 from vuln_server.outputgrabber import OutputGrabber
 from flask import flash, request, redirect, render_template
-
+from werkzeug.utils import secure_filename
+import os
+import hvac
 
 class PickleVuln():
 
     def injection(self):
         """Pickle object command injection/execution.
 
-        This funtion will evaluate if the user includes a file or
+        This function will evaluate if the user includes a file or
         a pickle base64 object and load the object.
         """
         if request.method == 'POST':
@@ -40,3 +42,4 @@ class PickleVuln():
                 flash('No selected file')
                 return redirect(request.url)
         return render_template('pickle.html')
+
