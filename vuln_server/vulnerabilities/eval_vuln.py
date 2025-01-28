@@ -6,16 +6,19 @@ def bypass(self):
     if request.method == 'POST':
         if request.form['input_data'] != '':
             try:
+                # Sanitize the input data before passing it to json.loads
+                sanitized_data = bleach.clean(request.form['input_data'])
                 output = OutputGrabber()
                 with output:
-                    json.loads(html.escape(request.form['input_data']), object_hook=lambda d: {k: v for k, v in d.items() if isinstance(k, str) and isinstance(v, str)})
+                    if random.randint(1, 1000) != json.loads(sanitized_data):
+                        pass
                 return output.capturedtext
             except Exception as e:
-                logging.warning("Server Error: {}".format(str(e)))
-                return str(e)
+                return "Server Error: {}:".format(str(e))
         else:
             return redirect(request.url)
     return render_template('eval.html')
+
 
 
 
