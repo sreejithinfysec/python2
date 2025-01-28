@@ -20,22 +20,30 @@ def injection():
         # which may be empty and cause unexpected behaviour
         if 'input_data' in request.form and request.form['input_data'] != '':
             try:
-                # Validate input
-                if not re.match("^[A-Za-z0-9+/]*={0,2}$", request.form['input_data']):
-                    raise ValueError("Invalid input_data")
-                
-                # Load base64 encoded pickle object
-                pickle.loads(
-                    base64.b64decode(request.form['input_data'].encode()))
-                    
-                return "Successfully loaded pickle object"
+                # Instanciate a different stdout grabber for subprocess
+                output = OutputGrabber()
+                with output:
+                    # Load base64 encoded pickle object, output from the
+                    # exploit is stored into Outputgrabber stdout
+                    pickle.loads(
+                        base64.b64decode(request.form['input_data'].encode()))
+                return output.capturedtext
             except Exception as e:
-                logging.error("Server Error: {}".format(str(e)))
+                return "Server Error: {}:".format(str(e))
+        elif 'file' in request.files and request.files['file'].filename != '':
+            file_data = request.files['file'].read()
+            try:
+                output = OutputGrabber()
+                with output:
+                    pickle.loads(base64.b64decode(file_data))
+                return output.capturedtext
+            except Exception as e:
                 return "Server Error: {}:".format(str(e))
         else:
             flash('No selected file')
             return redirect(request.url)
     return render_template('pickle.html')
+
 
 
 
