@@ -28,6 +28,7 @@ def __enter__(self):
     return self
 
 
+
     def __exit__(self, type, value, traceback):
         self.stop()
 
@@ -46,6 +47,7 @@ def start(self):
         self.workerThread.start()
         # Make sure that the thread is running and os.read() has executed:
         time.sleep(0.01)
+
 
 
     def stop(self):
