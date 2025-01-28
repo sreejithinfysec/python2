@@ -18,8 +18,10 @@ def bypass(self):
             except (ValueError, SyntaxError) as e:
                 return "Invalid input: {}".format(str(e))
         else:
-            return redirect(request.url)
+            # Redirect to a safe URL
+            return redirect('/default_url')
     return render_template('eval.html')
+
 
 
 
