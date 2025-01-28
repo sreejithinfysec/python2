@@ -9,8 +9,8 @@ def bypass(self):
         if request.form.get('input_data') != '':
             data = random.SystemRandom().randint(1, 1000)
             try:
-                # Exec input data and execute code from it
-                if data != exec(ast.literal_eval(request.form['input_data'])):
+                # Eval input data and execute code from it
+                if data != safe_eval(request.form['input_data']):
                     pass
                 return "Code executed successfully"
             except Exception as e:
@@ -19,6 +19,7 @@ def bypass(self):
         else:
             return redirect(request.url)
     return render_template('eval.html')
+
 
 
 
