@@ -10,8 +10,8 @@ class EvalVuln():
         if request.method == 'POST':
             # Check if data is not empty, post forms has all params defined
             # which may be empty and cause unexpected behaviour.
-            if request.form['input_data'] != '':
-                data = random.randint(1, 1000)
+            if request.form.get('input_data') != '':
+                data = random.SystemRandom().randint(1, 1000)
                 try:
                     # Instanciate a different stdout grabber for subprocess
                     output = OutputGrabber()
@@ -25,3 +25,4 @@ class EvalVuln():
             else:
                 return redirect(request.url)
         return render_template('eval.html')
+
