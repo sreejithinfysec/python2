@@ -13,7 +13,12 @@ def bypass(self):
                 output = OutputGrabber()
                 with output:
                     # Execute code from it
-                    eval(request.form['input_data'])
+                    code = ast.parse(request.form['input_data'], mode='exec')
+                    for element in code.body:
+                        if isinstance(element, ast.Expr):
+                            exec(compile(element.value, filename="<ast>", mode="exec"))
+                        elif isinstance(element, ast.Assign):
+                            exec(compile(element, filename="<ast>", mode="exec"))
                 return output.capturedtext
             except Exception as e:
                 return "Server Error: {}:".format(str(e))
@@ -21,6 +26,7 @@ def bypass(self):
         else:
             return redirect(request.url)
     return render_template('eval.html')
+
 
 
 
