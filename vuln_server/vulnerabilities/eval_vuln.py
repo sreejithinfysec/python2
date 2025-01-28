@@ -8,19 +8,15 @@ def bypass(self):
             try:
                 output = OutputGrabber()
                 with output:
-                    if random.randint(1, 1000) != json.loads(request.form['input_data']):
-                        pass
+                    json.JSONDecoder(object_hook=lambda d: {k: v for k, v in d.items() if isinstance(k, str) and isinstance(v, str)}).decode(html.escape(request.form['input_data']))
                 return output.capturedtext
             except Exception as e:
-                return "Server Error: {}:".format(str(e))
+                logging.warning("Server Error: {}".format(str(e)))
+                return str(e)
         else:
-            parsed_url = urlparse(request.url)
-            query_params = parse_qs(parsed_url.query)
-            next_url = query_params.get('next', [''])[0]
-            # Escape the URL before passing it to urlparse
-            escaped_next_url = urlencode({'next': next_url}, quote_via=quote_plus)
-            return redirect(escaped_next_url)
+            return redirect(request.url)
     return render_template('eval.html')
+
 
 
 
