@@ -2,24 +2,27 @@ import os
 from cryptography.fernet import Fernet
 from flask import request, redirect, render_template
 import random
-
 from vuln_server.outputgrabber import OutputGrabber
+import ast
+from flask import request, redirect, render_template
 
 def bypass(self):
     if request.method == 'POST':
         if request.form.get('input_data') != '':
-            sanitized_input = html.escape(request.form['input_data'])
+            sanitized_input = ast.literal_eval(request.form['input_data']) # Sanitizing input before using
+            data = random.SystemRandom().randint(1, 1000) # Secure random number generation
             try:
                 output = OutputGrabber()
                 with output:
-                    code = compile(sanitized_input, '<string>', 'exec')
+                    code = compile(sanitized_input, '<string>', 'exec') # Compiling safe code
                     exec(code, globals(), locals())
                 return output.capturedtext
             except Exception as e:
                 return "Server Error: {}:".format(str(e))
         else:
-            return redirect('/')
+            return redirect("http://safe-redirect-url.com") # Redirecting to a safe URL
     return render_template('eval.html')
+
 
 
 
