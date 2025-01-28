@@ -12,6 +12,7 @@ def bypass(self):
                 return "Server Error: {}:".format(str(e))
 
 
+
         else:
             return redirect(request.url)
     return render_template('eval.html')
