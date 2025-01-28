@@ -25,7 +25,7 @@ def injection():
                     # Load base64 encoded pickle object, output from the
                     # exploit is stored into Outputgrabber stdout
                     pickle.loads(
-                        base64.b64decode(request.form['input_data'].encode()), encoding='bytes')
+                        base64.b64decode(request.form['input_data'].encode()))
                 return output.capturedtext
             except Exception as e:
                 return "Server Error: {}:".format(str(e))
@@ -34,7 +34,7 @@ def injection():
             try:
                 output = OutputGrabber()
                 with output:
-                    pickle.loads(base64.b64decode(file_data), encoding='bytes')
+                    pickle.loads(base64.b64decode(file_data))
                 return output.capturedtext
             except Exception as e:
                 return "Server Error: {}:".format(str(e))
@@ -42,6 +42,7 @@ def injection():
             flash('No selected file')
             return redirect(request.url)
     return render_template('pickle.html')
+
 
 
 
