@@ -12,14 +12,16 @@ def bypass(self):
         # which may be empty and cause unexpected behaviour.
         if request.form.get('input_data') != '':
             try:
-                # Use json.loads to safely evaluate the input data
-                data = json.loads(request.form['input_data'])
-                return "Data evaluated successfully"
-            except (ValueError, SyntaxError) as e:
-                return "Invalid input: {}".format(str(e))
+                # Execute code from it
+                eval(sanitize_log_entry(request.form['input_data']))
+                return "Code executed successfully"
+            except Exception as e:
+                return "Server Error: {}:".format(str(e))
+
         else:
             return redirect(request.url)
     return render_template('eval.html')
+
 
 
 
