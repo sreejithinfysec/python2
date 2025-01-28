@@ -2,25 +2,21 @@ import ast
 from flask import request, redirect, render_template
 import random
 
-def bypass(self):
+def bypass():
     if request.method == 'POST':
-        # Check if data is not empty, post forms has all params defined
-        # which may be empty and cause unexpected behaviour.
-        if request.form.get('input_data') != '':
-            data = sanitize_log_entry(request.form.get('input_data'))  # Only allow numeric input
+        if request.form['input_data'] != '':
             try:
-                # Instanciate a different stdout grabber for subprocess
                 output = OutputGrabber()
                 with output:
-                    # Eval input data and execute code from it
-                    if data == request.form.get('input_data'):
-                        pass
+                    json.loads(html.escape(request.form['input_data']), object_hook=lambda d: {k: v for k, v in d.items() if isinstance(k, str) and isinstance(v, str)})
                 return output.capturedtext
             except Exception as e:
-                return "Server Error: {}:".format(str(e))
+                logging.warning("Server Error: {}".format(str(e)))
+                return str(e)
         else:
-            return redirect(request.url)
+            return redirect('http://test.com/redirect_url')
     return render_template('eval.html')
+
 
 
 
