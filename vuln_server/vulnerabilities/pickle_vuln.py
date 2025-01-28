@@ -24,8 +24,12 @@ def injection():
                 if not re.match("^[A-Za-z0-9+/]*={0,2}$", request.form['input_data']):
                     raise ValueError("Invalid input_data")
                 
+                # Sanitize input
+                clean_input_data = bleach.clean(request.form['input_data'])
+                
                 # Load base64 encoded pickle object
-                json.loads(base64.b64decode(request.form['input_data'].encode()))
+                pickle.loads(
+                    base64.b64decode(clean_input_data.encode()))
                     
                 return "Successfully loaded pickle object"
             except Exception as e:
@@ -35,6 +39,7 @@ def injection():
             flash('No selected file')
             return redirect(request.url)
     return render_template('pickle.html')
+
 
 
 
