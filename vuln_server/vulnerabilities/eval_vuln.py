@@ -8,8 +8,7 @@ from vuln_server.outputgrabber import OutputGrabber
 def bypass(self):
     if request.method == 'POST':
         if request.form.get('input_data') != '':
-            sanitized_input = bleach.clean(request.form['input_data'], tags=[], strip=True) # Only allow text
-            data = secrets.SystemRandom().randint(1, 1000) # Use secrets module for generating cryptographically strong random numbers
+            sanitized_input = html.escape(request.form['input_data'])
             try:
                 output = OutputGrabber()
                 with output:
@@ -19,8 +18,9 @@ def bypass(self):
             except Exception as e:
                 return "Server Error: {}:".format(str(e))
         else:
-            return redirect('/') # Use relative URLs or absolute URLs that are controlled by the server
+            return redirect('/')
     return render_template('eval.html')
+
 
 
 
