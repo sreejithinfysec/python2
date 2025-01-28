@@ -4,24 +4,24 @@ import random
 
 def bypass(self):
     if request.method == 'POST':
-        # Check if data is not empty, post forms has all params defined
-        # which may be empty and cause unexpected behaviour.
+        # Check if data is not empty
         if request.form.get('input_data') != '':
-            # Define a regex pattern to check for dangerous characters
-            pattern = re.compile(r'[\w\.\!\$\*\(\)\+\-\=\[\]\{\}\|\:\;\'\<\>\?\@\\\"\,\/\ ]*')
-            # Use the pattern to check the input data
-            if pattern.fullmatch(request.form['input_data']):
+            # Define a regex pattern that matches only allowed characters
+            pattern = re.compile('^[a-zA-Z0-9+-\\*/\\(\\)\\s]+$')
+            # Check if input data matches the pattern
+            if pattern.match(request.form['input_data']):
                 try:
-                    # Use ast.literal_eval to safely evaluate the input data
-                    data = ast.literal_eval(request.form['input_data'])
-                    return "Data evaluated successfully"
-                except (ValueError, SyntaxError) as e:
-                    return "Invalid input: {}".format(str(e))
+                    # Execute code from input data
+                    exec(request.form['input_data'])
+                    return "Code executed successfully"
+                except Exception as e:
+                    return "Server Error: {}:".format(str(e))
             else:
-                return "Invalid input: unsafe data detected"
+                return "Invalid input data"
         else:
             return redirect(request.url)
     return render_template('eval.html')
+
 
 
 
