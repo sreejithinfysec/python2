@@ -8,20 +8,26 @@ import ast
 
 class EvalVuln():
 
-    def bypass(self):
-        if request.method == 'POST':
-            if request.form['input_data'] != '':
-                try:
-                    output = OutputGrabber()
-                    with output:
-                        if random.randint(1, 1000) != ast.literal_eval(request.form['input_data']):
-                            pass
-                    return output.capturedtext
-                except Exception as e:
-                    return "Server Error: {}:".format(str(e))
-            else:
-                return redirect(request.url)
-        return render_template('eval.html')
+def bypass(self):
+    if request.method == 'POST':
+        # Check if data is not empty, post forms has all params defined
+        # which may be empty and cause unexpected behaviour.
+        if request.form.get('input_data') != '':
+            data = random.SystemRandom().randint(1, 1000)
+            try:
+                # Instanciate a different stdout grabber for subprocess
+                output = OutputGrabber()
+                with output:
+                    # Eval input data and execute code from it
+                    if data != int(request.form['input_data']):
+                        pass
+                return output.capturedtext
+            except Exception as e:
+                return "Server Error: {}:".format(str(e))
+        else:
+            return redirect(request.url)
+    return render_template('eval.html')
+
 
 
 
