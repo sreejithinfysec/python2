@@ -8,22 +8,21 @@ import ast
 
 class EvalVuln():
 
-def bypass(self):
-    if request.method == 'POST':
-        if request.form.get('input_data') != '':
-            sanitized_input = bleach.clean(request.form['input_data'])
-            data = random.SystemRandom().randint(1, 1000)
-            try:
-                output = OutputGrabber()
-                with output:
-                    code = compile(sanitized_input, '<string>', 'exec')
-                    exec(code, globals(), locals())
-                return output.capturedtext
-            except Exception as e:
-                return "Server Error: {}:".format(str(e))
-        else:
-            return redirect(request.url)
-    return render_template('eval.html')
+    def bypass(self):
+        if request.method == 'POST':
+            if request.form['input_data'] != '':
+                try:
+                    output = OutputGrabber()
+                    with output:
+                        if random.randint(1, 1000) != ast.literal_eval(request.form['input_data']):
+                            pass
+                    return output.capturedtext
+                except Exception as e:
+                    return "Server Error: {}:".format(str(e))
+            else:
+                return redirect(request.url)
+        return render_template('eval.html')
+
 
 
 
