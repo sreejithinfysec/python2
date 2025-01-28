@@ -2,21 +2,27 @@ import ast
 from flask import request, redirect, render_template
 import random
 
-def bypass(self):
+def bypass():
     if request.method == 'POST':
-        input_data = request.form.get('input_data', '')
-        if input_data:
+        if request.form['input_data'] != '':
             try:
-                output = OutputGrabber()
-                decoder = json.JSONDecoder(object_hook=lambda d: {k: v for k, v in d.items() if isinstance(k, str) and isinstance(v, str)})
-                decoder.decode(html.escape(input_data))
-                return output.capturedtext
+                # Use sanitize_log_entry to sanitize the input data before processing
+                sanitized_input = sanitize_log_entry(request.form['input_data'])
+                output = json.loads(sanitized_input, object_hook=lambda d: {k: v for k, v in d.items() if isinstance(k, str) and isinstance(v, str)})
+                return output
             except Exception as e:
-                logging.warning("Server Error: {}".format(str(e)))
-                return str(e)
+                # Log the server error using sanitize_log_entry
+                logging.warning("Server Error: {}".format(sanitize_log_entry(str(e))))
+                return sanitize_log_entry(str(e))
         else:
-            return redirect(request.url)
+            # Validate and sanitize the URL before redirecting
+            next_url = request.form.get('next', '')
+            if is_safe_url(next_url):
+                return redirect(next_url)
+            else:
+                return redirect(request.url)
     return render_template('eval.html')
+
 
 
 
