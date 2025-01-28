@@ -20,22 +20,31 @@ def injection():
         if 'input_data' in request.form and request.form['input_data'] != '':
             try:
                 # Load base64 encoded pickle object
-                pickle.loads(
-                    base64.b64decode(request.form['input_data'].encode()))
+                # Validate input before decoding and unpickling
+                if isinstance(request.form['input_data'], str) and \
+                   all(c not in request.form['input_data'] for c in (';', '|', '&', '`', '$', '(', ')', '{', '}')):
+                    pickle.loads(
+                        base64.b64decode(request.form['input_data'].encode()))
+                else:
+                    raise ValueError("Invalid input")
             except Exception as e:
-                logger.error("Server Error: %s", str(e))
-                return json.dumps({"error": f"Server Error: {str(e)}"}), 500
+                return "Server Error: {}:".format(str(e))
         elif 'file' in request.files and request.files['file'].filename != '':
             file_data = request.files['file'].read()
             try:
-                pickle.loads(base64.b64decode(file_data))
+                # Validate input before decoding and unpickling
+                if isinstance(file_data, bytes) and \
+                   all(c not in file_data for c in (';', '|', '&', '`', '$', '(', ')', '{', '}')):
+                    pickle.loads(base64.b64decode(file_data))
+                else:
+                    raise ValueError("Invalid input")
             except Exception as e:
-                logger.error("Server Error: %s", str(e))
-                return json.dumps({"error": f"Server Error: {str(e)}"}), 500
+                return "Server Error: {}:".format(str(e))
         else:
             flash('No selected file')
             return redirect(request.url)
     return render_template('pickle.html')
+
 
 
 
