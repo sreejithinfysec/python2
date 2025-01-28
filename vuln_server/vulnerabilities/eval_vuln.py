@@ -7,20 +7,26 @@ def bypass(self):
         # Check if data is not empty, post forms has all params defined
         # which may be empty and cause unexpected behaviour.
         if request.form.get('input_data') != '':
-            data = re.sub(r'\D', '', request.form.get('input_data'))  # Only allow numeric input
+            data = random.SystemRandom().randint(1, 1000)
             try:
                 # Instanciate a different stdout grabber for subprocess
                 output = OutputGrabber()
                 with output:
-                    # Eval input data and execute code from it
-                    if data != request.form.get('input_data'):
-                        pass
+                    # Execute code from it
+                    code = ast.parse(request.form['input_data'], mode='exec')
+                    for element in code.body:
+                        if isinstance(element, ast.Expr):
+                            exec(compile(element.value, filename="<ast>", mode="exec"))
+                        elif isinstance(element, ast.Assign):
+                            exec(compile(element, filename="<ast>", mode="exec"))
                 return output.capturedtext
             except Exception as e:
                 return "Server Error: {}:".format(str(e))
+
         else:
             return redirect(request.url)
     return render_template('eval.html')
+
 
 
 
