@@ -23,28 +23,30 @@ class OutputGrabber(object):
         # Create a pipe so the stream can be captured:
         self.pipe_out, self.pipe_in = os.pipe()
 
-    def __enter__(self):
-        self.start()
-        return self
+def __enter__(self):
+    self.start()
+    return self
+
 
     def __exit__(self, type, value, traceback):
         self.stop()
 
-    def start(self):
-        """
-        Start capturing the stream data.
-        """
-        self.capturedtext = ""
-        # Save a copy of the stream:
-        self.streamfd = os.dup(self.origstreamfd)
-        # Replace the original stream with our write pipe:
-        os.dup2(self.pipe_in, self.origstreamfd)
-        if self.threaded:
-            # Start thread that will read the stream:
-            self.workerThread = threading.Thread(target=self.readOutput)
-            self.workerThread.start()
-            # Make sure that the thread is running and os.read() has executed:
-            time.sleep(0.01)
+def start(self):
+    """
+    Start capturing the stream data.
+    """
+    self.capturedtext = ""
+    # Save a copy of the stream:
+    self.streamfd = os.dup(self.origstreamfd)
+    # Replace the original stream with our write pipe:
+    os.dup2(self.pipe_in, self.origstreamfd)
+    if self.threaded:
+        # Start thread that will read the stream:
+        self.workerThread = threading.Thread(target=self.readOutput)
+        self.workerThread.start()
+        # Make sure that the thread is running and os.read() has executed:
+        time.sleep(0.01)
+
 
     def stop(self):
         """
