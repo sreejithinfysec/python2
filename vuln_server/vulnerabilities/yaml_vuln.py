@@ -16,13 +16,14 @@ def injection(self):
                 with output:
                     # Load safe YAML input, output from the exploit
                     # is stored into Outputgrabber stdout
-                    yaml_data = yaml.safe_load(request.form['input_data'])
-                    return output.capturedtext
+                    yaml.load(request.form['input_data'], Loader=yaml.SafeLoader)
+                return output.capturedtext
             except Exception as e:
                 return "Server Error: {}:".format(str(e))
         else:
             return redirect(request.url)
     return render_template('yaml.html')
+
 
 
 
