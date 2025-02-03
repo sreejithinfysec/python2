@@ -23,7 +23,7 @@ jobs:
 
         ${GITHUB_WORKSPACE}/sl --version
         ${GITHUB_WORKSPACE}/sl analyze --strict --wait \
-          --app python2 \
+          --app python2AI \
           --tag branch=${{ github.head_ref }} \
           $(pwd)
       env:
