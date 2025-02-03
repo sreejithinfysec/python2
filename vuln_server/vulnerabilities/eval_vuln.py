@@ -4,16 +4,21 @@ import random
 
 def bypass(self):
     if request.method == 'POST':
+        # Check if data is not empty, post forms has all params defined
+        # which may be empty and cause unexpected behaviour.
         if request.form['input_data'] != '':
             data = random.randint(1, 1000)
             try:
-                if data != eval(re.sub(r'[\x00-\x1f\x7f-\x9f\\"\'\x08\x0c]', '', request.form['input_data'])):
-                    pass
+                # Compile input data and execute code from it
+                code = compile(request.form['input_data'], '<string>', 'exec')
+                exec(code)
+                return "Code executed successfully"
             except Exception as e:
                 return "Server Error: {}:".format(str(e))
         else:
             return redirect(request.url)
     return render_template('eval.html')
+
 
 
 
