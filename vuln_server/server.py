@@ -39,6 +39,7 @@ def yaml_injection():
 
 
 
+
 @app.route('/xml', methods=['GET', 'POST'])
 def xml_injection():
     vuln = XMLVuln()
